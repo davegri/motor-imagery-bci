@@ -1,5 +1,5 @@
 import mne
-from Marker import Marker
+from src.Marker import Marker
 from sklearn.model_selection import RepeatedStratifiedKFold, cross_validate
 import numpy as np
 from sklearn.model_selection import GridSearchCV
@@ -11,6 +11,8 @@ mne.set_log_level('warning')
 
 def evaluate_pipeline(pipeline, epochs, labels, n_splits=10, n_repeats=1):
     print(f'Evaluating pipeline performance ({n_splits} splits, {n_repeats} repeats, {len(labels)} epochs)...')
+    if n_splits >= len(epochs):
+        n_splits = 2
     results = cross_validate(pipeline, epochs, labels, cv=cross_validation(n_splits, n_repeats),
                              return_train_score=True, n_jobs=-1)
     print(
@@ -61,7 +63,7 @@ def grid_search_pipeline_hyperparams(epochs, labels, pipeline):
     return gs.best_params_
 
 
-def get_epochs(raws, trial_duration, calibration_duration, markers=[Marker.IDLE, Marker.LEFT, Marker.RIGHT],
+def get_epochs(raws, trial_duration, calibration_duration, markers=Marker.all(),
                reject_bad=False,
                on_missing='raise'):
     reject_criteria = dict(eeg=100e-6)  # 100 µV

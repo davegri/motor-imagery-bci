@@ -1,23 +1,24 @@
 import numpy as np
-from Marker import Marker
-from board import Board
+from src.Marker import Marker
+from src.board import Board
 
 from psychopy import sound, visual
 
-from pipeline import get_epochs, evaluate_pipeline
-from data_utils import load_rec_params, save_raw, load_hyperparams
-import spectral
+from src.pipeline import get_epochs, evaluate_pipeline
+from src.data_utils import load_rec_params, save_raw, load_hyperparams
+import src.spectral as spectral
 import os
 
 BG_COLOR = "black"
 STIM_COLOR = "white"
+AUDIO_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "../audio"))
 
 visual = None
 core = None
 event = None
 
 
-def run_session(params, retrain_pipeline=spectral, predict_pipeline=None, epochs=None, labels=None):
+def run_session(params, retrain_pipeline=None, predict_pipeline=None, epochs=None, labels=None):
     """
     Run a recording session, if pipeline is passed display prediction after every epoch
     """
@@ -33,8 +34,9 @@ def run_session(params, retrain_pipeline=spectral, predict_pipeline=None, epochs
 
     # open psychopy window and display starting message
     win = visual.Window(units="norm", color=BG_COLOR, fullscr=params["full_screen"])
-    msg1 = f'Hello {params["subject"]}!\n Hit any key to start, press Esc at any point to exit'
-    loop_through_messages(win, [msg1])
+    if params["wait_on_start"]:
+        msg1 = f'Hello {params["subject"]}!\n Hit any key to start, press Esc at any point to exit'
+        loop_through_messages(win, [msg1])
 
     if retrain_pipeline:
         hyperparams = load_hyperparams(params["subject"], retrain_pipeline)
@@ -105,7 +107,7 @@ def run_session(params, retrain_pipeline=spectral, predict_pipeline=None, epochs
         core.wait(0.5)
         win.close()
         raw = board.get_data()
-    save_raw(raw, rec_params)
+    save_raw(raw, params)
 
 
 def loop_through_messages(win, messages):
@@ -166,13 +168,17 @@ def progress_text(win, done, total, stim):
 
 
 def progress_sound(stim):
-    return sound.Sound(os.path.join("../audio", f"{Marker(stim).name}.ogg"))
+    sound_path = os.path.join(AUDIO_PATH, f"{Marker(stim).name}.ogg")
+    if os.path.isfile(sound_path):
+        return sound.Sound(sound_path)
+    else:
+        return sound.Sound()
 
 
 def classification_result_sound(marker, prediction):
     if marker == prediction:
-        return sound.Sound(os.path.join("../audio", "good job!.ogg"))
-    return sound.Sound(os.path.join("../audio", "try again.ogg"))
+        return sound.Sound(os.path.join(AUDIO_PATH, "good job!.ogg"))
+    return sound.Sound(os.path.join(AUDIO_PATH, "try again.ogg"))
 
 
 def classification_result_txt(win, marker, prediction):
@@ -193,4 +199,4 @@ def marker_image(win, marker):
 
 if __name__ == "__main__":
     rec_params = load_rec_params()
-    record_data(rec_params)
+    run_session(rec_params)

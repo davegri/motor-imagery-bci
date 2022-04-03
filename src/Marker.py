@@ -1,5 +1,5 @@
 from enum import IntEnum, unique
-from constants import IMAGES_DIR
+from src.constants import IMAGES_DIR
 import os
 
 
@@ -8,6 +8,7 @@ class Marker(IntEnum):
     LEFT = 2
     RIGHT = 1
     IDLE = 3
+    TOUNGE = 4
 
     @property
     def image_path(self):
@@ -17,7 +18,7 @@ class Marker(IntEnum):
     def shape(self):
         if self == Marker.LEFT or self == Marker.RIGHT:
             return create_arrow_shape(self)
-        if self == Marker.IDLE:
+        else:
             return create_square_shape()
 
     @classmethod

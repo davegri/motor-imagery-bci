@@ -1,11 +1,11 @@
 from sklearn.pipeline import Pipeline
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
-from preprocessing import laplacian
+from src.preprocessing import laplacian
 import mne
 from mne_features.univariate import compute_pow_freq_bands
 import mne_features.univariate as mnf
 import numpy as np
-from pipeline import show_pipeline_steps, filter_hyperparams_for_pipeline
+from src.pipeline import show_pipeline_steps, filter_hyperparams_for_pipeline
 from skopt.space import Categorical, Integer, Real
 import json
 import scipy
@@ -53,6 +53,13 @@ class FeatureExtractor:
             "1": [8, 12],
             "2": [12, 30]
         }
+        self.params = {
+            "freq_1": True,
+            "freq_2": True,
+            "freq_3": True,
+            "freq_4": True,
+            "freq_5": True,
+        }
         self.n_per_seg = 100
         self.n_overlap = 0.5
 
@@ -65,7 +72,7 @@ class FeatureExtractor:
             self.freq_bands = freq_bands
         if n_overlap is not None:
             self.n_overlap = n_overlap
-        self.params = kwargs
+        self.params = {**self.params, **kwargs}
 
     def fit(self, data, labels):
         return self

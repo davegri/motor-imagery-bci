@@ -5,11 +5,11 @@ from sklearn.model_selection import RepeatedStratifiedKFold
 from skopt import BayesSearchCV
 from skopt.space import Categorical, Integer, Real
 
-from recording import run_session
-from pipeline import evaluate_pipeline, get_epochs, bayesian_opt
-from data_utils import load_recordings, load_hyperparams, save_hyperparams, load_rec_params
-import spectral
-import csp
+from src.recording import run_session
+from src.pipeline import evaluate_pipeline, get_epochs, bayesian_opt
+from src.data_utils import load_recordings, load_hyperparams, save_hyperparams, load_rec_params
+import src.spectral as spectral
+import src.csp as csp
 import sklearn
 import pandas as pd
 

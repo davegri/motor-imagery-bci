@@ -1,7 +1,7 @@
 import mne
 import numpy as np
 
-from board import EEG_CHAN_NAMES
+from src.board import EEG_CHAN_NAMES
 import scipy.stats
 
 LAPLACIAN = {

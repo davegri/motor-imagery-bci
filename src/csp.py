@@ -1,9 +1,9 @@
 from sklearn.pipeline import Pipeline
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
-from preprocessing import laplacian
+from src.preprocessing import laplacian
 import mne
 import numpy as np
-from pipeline import show_pipeline_steps
+from src.pipeline import show_pipeline_steps
 from skopt.space import Real, Integer
 
 name = "csp"
