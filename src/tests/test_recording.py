@@ -3,6 +3,7 @@ from src.recording import run_session
 from src.Workflows import load_epochs_for_subject, create_pipeline_for_subject
 from src.Marker import Marker
 import src.csp as csp
+import glfw
 
 params = {
     "use_synthetic_board": True,
@@ -19,6 +20,7 @@ params = {
 
 
 def test_full(monkeypatch, tmp_path):
+    glfw.window_hint(glfw.VISIBLE, 0)
     monkeypatch.setattr(src.constants, 'RECORDINGS_DIR', tmp_path)
     run_session(params)
     epochs, labels = load_epochs_for_subject(params["subject"])
