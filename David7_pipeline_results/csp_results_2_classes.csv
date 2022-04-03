@@ -1,0 +1,7 @@
+,csp__entropy,csp__log_mean_power,csp__n_components,csp__total_power,csp__var,preprocessing__do_laplacian,preprocessing__epoch_tmin,preprocessing__h_freq,preprocessing__l_freq,pipeline,model,accuracy,std,model__C,model__degree,model__gamma,model__kernel,model__max_depth,model__max_features,model__n_estimators,model__learning_rate,model__leaf_size,model__n_neighbors
+0,False,True,10,False,False,True,0.0,27.609682635245985,9.267158051957916,csp,LinearDiscriminantAnalysis,0.865909090909091,0.08032089566851039,,,,,,,,,,
+1,True,False,9,True,True,False,0.0,23.43664990827955,9.321232499174481,csp,SVC,0.865151515151515,0.1297114831868151,0.0001646989710489529,8.0,0.003354335570734069,linear,,,,,,
+2,True,False,8,True,True,False,0.0,24.568821774497284,8.978460400353987,csp,RandomForestClassifier,0.8568181818181818,0.12113870882942207,,,,,6.0,7.0,100.0,,,
+3,True,True,8,True,True,False,0.0,32.81960950133957,8.617370893558462,csp,GradientBoostingClassifier,0.8469696969696969,0.10766108438479101,,,,,13.0,8.0,75.0,0.23270526196026126,,
+4,True,True,8,False,True,False,0.0,20.077592023078786,8.809378573081574,csp,AdaBoostClassifier,0.8643939393939395,0.13044609834334928,,,,,,,100.0,0.03619072798806596,,
+5,False,True,10,False,True,True,0.0,28.985553355839404,9.475405977123163,csp,KNeighborsClassifier,0.8757575757575757,0.10271788640411086,,,,,,,,,10.0,16.0

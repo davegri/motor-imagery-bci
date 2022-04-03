@@ -1,0 +1,10 @@
+{
+    "use_synthetic_board": false,
+    "full_screen": true,
+    "subject": "David3",
+    "trial_duration": 3,
+    "trials_per_stim": 10,
+    "get_ready_duration": 1,
+    "calibration_duration": 1,
+    "display_online_result_duration": 2
+}

@@ -1,0 +1,7 @@
+{
+    "subject": "Haggai",
+    "trial_duration": 3,
+    "trials_per_stim": 20,
+    "get_ready_duration": 2,
+    "calibration_duration": 1
+}

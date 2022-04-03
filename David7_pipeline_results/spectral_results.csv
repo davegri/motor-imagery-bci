@@ -1,0 +1,7 @@
+,feature_extraction__epoch_tmin,feature_extraction__freq_1,feature_extraction__freq_2,feature_extraction__freq_3,feature_extraction__freq_4,feature_extraction__freq_5,feature_extraction__n_overlap,feature_extraction__n_per_seg,preprocessing__do_laplacian,pipeline,model,accuracy,std,model__C,model__degree,model__gamma,model__kernel,model__max_depth,model__max_features,model__n_estimators,model__learning_rate,model__leaf_size,model__n_neighbors
+0,1.4039352255976143,True,True,True,False,True,0.431872877934838,50,True,spectral,LinearDiscriminantAnalysis,0.5330882352941176,0.13752162459712985,,,,,,,,,,
+1,0.5,False,False,True,True,False,0.8168876930602803,77,True,spectral,SVC,0.4463235294117647,0.07992751906883054,0.3412611882227947,1.0,0.016727916390687155,linear,,,,,,
+2,2.292515193826979,True,True,True,False,True,0.6176327477409326,237,False,spectral,RandomForestClassifier,0.4764705882352941,0.14899642653804576,,,,,6.0,2.0,200.0,,,
+3,2.3039092016069835,False,False,True,True,True,0.07456516473231894,300,False,spectral,GradientBoostingClassifier,0.4834558823529411,0.11294905092800174,,,,,4.0,4.0,70.0,0.1368616322762412,,
+4,2.4785138733558503,True,False,True,False,False,0.7426401443297909,50,True,spectral,AdaBoostClassifier,0.4764705882352941,0.11787890757557554,,,,,,,137.0,0.00029043415446218095,,
+5,1.8674055848947078,True,False,True,True,False,0.3278576749368655,82,False,spectral,KNeighborsClassifier,0.4580882352941177,0.06757508959345902,,,,,,,,,10.0,25.0

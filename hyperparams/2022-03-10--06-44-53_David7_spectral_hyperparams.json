@@ -1,0 +1,10 @@
+{
+    "feature_extraction__epoch_tmin": 3.0,
+    "feature_extraction__freq_1": false,
+    "feature_extraction__freq_2": true,
+    "feature_extraction__freq_3": false,
+    "feature_extraction__freq_4": false,
+    "feature_extraction__freq_5": false,
+    "feature_extraction__n_overlap": 0.8,
+    "feature_extraction__n_per_seg": 114
+}

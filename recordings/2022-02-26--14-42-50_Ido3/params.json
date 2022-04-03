@@ -1,0 +1,10 @@
+{
+    "use_synthetic_board": false,
+    "full_screen": true,
+    "subject": "Ido3",
+    "trial_duration": 1,
+    "trials_per_stim": 2,
+    "get_ready_duration": 1,
+    "calibration_duration": 1,
+    "display_online_result_duration": 1
+}
