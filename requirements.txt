@@ -9,3 +9,5 @@ scikit-learn~=1.0.1
 matplotlib~=3.5.0
 scipy~=1.7.3
 scikit-optimize
+tkfilebrowser~=2.3.2
+wxPython~=4.1.1
