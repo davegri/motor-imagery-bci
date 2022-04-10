@@ -10,10 +10,8 @@ mne.set_log_level('warning')
 
 
 def evaluate_pipeline(pipeline, epochs, labels, n_splits=10, n_repeats=1):
+    n_splits = get_n_splits(n_splits, labels)
     print(f'Evaluating pipeline performance ({n_splits} splits, {n_repeats} repeats, {len(labels)} epochs)...')
-    _, label_counts = np.unique(labels, return_counts=True)
-    if n_splits >= min(label_counts):
-        n_splits = 2
     results = cross_validate(pipeline, epochs, labels, cv=cross_validation(n_splits, n_repeats),
                              return_train_score=True, n_jobs=-1)
     print(
@@ -21,6 +19,11 @@ def evaluate_pipeline(pipeline, epochs, labels, n_splits=10, n_repeats=1):
     print(
         f'\nTesting Accuracy: \n mean: {np.round(np.mean(results["test_score"]), 2)} \n std: {np.round(np.std(results["test_score"]), 3)}')
     return np.round(np.mean(results["train_score"]), 2)
+
+def get_n_splits(n_splits, labels):
+    _, label_counts = np.unique(labels, return_counts=True)
+    n_splits = 2 if n_splits >= min(label_counts) else n_splits
+    return n_splits
 
 
 def filter_hyperparams_for_pipeline(hyperparams, pipeline):
@@ -38,9 +41,7 @@ def cross_validation(n_splits=10, n_repeats=1):
 
 def bayesian_opt(epochs, labels, pipeline):
     pipe = pipeline.create_pipeline()
-    n_splits = 10
-    if len(epochs) < n_splits:
-        n_splits = 2
+    n_splits = get_n_splits(10, labels)
     opt = BayesSearchCV(
         pipe,
         pipeline.bayesian_search_space,
@@ -49,7 +50,6 @@ def bayesian_opt(epochs, labels, pipeline):
         cv=cross_validation(n_splits=n_splits),
         n_jobs=-1,
     )
-
     opt.fit(epochs, labels)
 
     print("Best parameter (CV score=%0.3f):" % opt.best_score_)

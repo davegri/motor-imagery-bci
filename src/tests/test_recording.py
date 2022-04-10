@@ -4,7 +4,6 @@ from src.Workflows import load_epochs_for_subject, create_pipeline_for_subject, 
 from src.Marker import Marker
 import src.csp as csp
 from src.data_utils import json_dump
-import glfw
 import os
 
 params = {
