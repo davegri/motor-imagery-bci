@@ -33,7 +33,7 @@ def run_session(params, retrain_pipeline=None, predict_pipeline=None, epochs=Non
     np.random.shuffle(trial_markers)
 
     # open psychopy window and display starting message
-    win = visual.Window(units="norm", color=BG_COLOR, fullscr=params["full_screen"], winType="glfw")
+    win = visual.Window(units="norm", color=BG_COLOR, fullscr=params["full_screen"])
     if params["wait_on_start"]:
         msg1 = f'Hello {params["subject"]}!\n Hit any key to start, press Esc at any point to exit'
         loop_through_messages(win, [msg1])

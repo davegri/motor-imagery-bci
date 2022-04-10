@@ -11,7 +11,8 @@ mne.set_log_level('warning')
 
 def evaluate_pipeline(pipeline, epochs, labels, n_splits=10, n_repeats=1):
     print(f'Evaluating pipeline performance ({n_splits} splits, {n_repeats} repeats, {len(labels)} epochs)...')
-    if n_splits >= len(epochs):
+    _, label_counts = np.unique(labels, return_counts=True)
+    if n_splits >= min(label_counts):
         n_splits = 2
     results = cross_validate(pipeline, epochs, labels, cv=cross_validation(n_splits, n_repeats),
                              return_train_score=True, n_jobs=-1)
@@ -65,7 +66,7 @@ def grid_search_pipeline_hyperparams(epochs, labels, pipeline):
 
 def get_epochs(raws, trial_duration, calibration_duration, markers=Marker.all(),
                reject_bad=False,
-               on_missing='raise'):
+               on_missing='warn'):
     reject_criteria = dict(eeg=100e-6)  # 100 µV
     flat_criteria = dict(eeg=1e-6)  # 1 µV
 
