@@ -1,6 +1,7 @@
 {
   "use_synthetic_board": true,
   "full_screen": true,
+  "wait_on_start": false,
   "subject": "JohnDoe",
   "trial_duration": 4,
   "trials_per_stim": 1,

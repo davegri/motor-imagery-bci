@@ -38,12 +38,15 @@ def cross_validation(n_splits=10, n_repeats=1):
 
 def bayesian_opt(epochs, labels, pipeline):
     pipe = pipeline.create_pipeline()
+    n_splits = 10
+    if len(epochs) < n_splits:
+        n_splits = 2
     opt = BayesSearchCV(
         pipe,
         pipeline.bayesian_search_space,
         verbose=20,
         n_iter=5,
-        cv=cross_validation(),
+        cv=cross_validation(n_splits=n_splits),
         n_jobs=-1,
     )
 
