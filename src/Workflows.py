@@ -119,5 +119,5 @@ def load_epochs_for_subject(subject, choose=False):
 
 
 if __name__ == "__main__":
-    # find_best_hyperparams_for_subject("David7", pipeline=spectral)
-    record_with_live_retraining("David7", csp)
+    find_best_hyperparams_for_subject("Synthetic", pipeline=spectral)
+    record_with_live_retraining("Synthetic", csp)
