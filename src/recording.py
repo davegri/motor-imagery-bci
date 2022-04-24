@@ -99,11 +99,11 @@ def run_session(params, retrain_pipeline=None, predict_pipeline=None, epochs=Non
 
                 text_stim(win, msg).draw()
                 win.flip()
-                keys_pressed = event.waitKeys()
-                if 'escape' in keys_pressed:
-                    win.close()
-                    return
-
+                if params["wait_on_start"]:
+                    keys_pressed = event.waitKeys()
+                    if 'escape' in keys_pressed:
+                        win.close()
+                        return
         core.wait(0.5)
         win.close()
         raw = board.get_data()
