@@ -41,7 +41,7 @@ def run_session(params, retrain_pipeline=None, predict_pipeline=None, epochs=Non
         hyperparams = load_hyperparams(params["subject"], retrain_pipeline)
         predict_pipeline = retrain_pipeline.create_pipeline(hyperparams)
         predict_pipeline.fit(epochs, labels)
-        best_score = evaluate_pipeline(predict_pipeline, epochs, labels)
+        best_score = np.mean(evaluate_pipeline(predict_pipeline, epochs, labels)["test_score"])
 
     # Start recording
     with Board(use_synthetic=params["use_synthetic_board"]) as board:
@@ -85,7 +85,8 @@ def run_session(params, retrain_pipeline=None, predict_pipeline=None, epochs=Non
                 new_pipeline.fit(total_epochs, total_labels)
 
                 # evaluate new pipeline
-                score = evaluate_pipeline(new_pipeline, total_epochs, total_labels)
+                results = evaluate_pipeline(new_pipeline, total_epochs, total_labels)
+                score = np.mean(results['test_score'])
                 msg = f'Finished retraining \nold model score: {best_score} \nnew model score: {score}'
                 win.flip()
                 predict_pipeline = new_pipeline
