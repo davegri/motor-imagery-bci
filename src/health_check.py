@@ -1,12 +1,14 @@
-from board import Board
-from recording import load_rec_params
+from src.board import Board
+from src.recording import load_rec_params
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy.signal
 import scipy.stats
 import mne
-from preprocessing import get_average_corr
+from src.preprocessing import get_average_corr
 
+class UserExit(Exception):
+    pass
 
 def health_check():
     rec_params = load_rec_params()
@@ -17,7 +19,7 @@ def health_check():
         chan_plots = plot_chans(board.channel_names, window_size, ax)
         montage_plot, chan_error_texts = plot_montage(board.channel_names, ax["upright"])
         psd_plots = plot_psd(ax["downright"], board.channel_names)
-        while True:
+        while plt.get_fignums():
             data = get_next_data(board, window_size)
             fs = board.sfreq
             errors_by_chan = check_chan_health(data)
@@ -50,7 +52,7 @@ def update_psd_plot(psd_plots, data, sfreq):
 
 def on_press(event):
     if event.key == 'escape':
-        raise SystemExit
+        plt.close(event.canvas.figure)
 
 
 def create_figure(num_chans):

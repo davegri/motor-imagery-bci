@@ -16,11 +16,13 @@ def evaluate_pipeline(pipeline, epochs, labels, n_splits=10, n_repeats=1):
         n_splits = 2
     results = cross_validate(pipeline, epochs, labels, cv=cross_validation(n_splits, n_repeats),
                              return_train_score=True, n_jobs=-1)
-    print(
-        f'\nTraining Accuracy: \n mean: {np.round(np.mean(results["train_score"]), 2)} \n std: {np.round(np.std(results["train_score"]), 3)}')
-    print(
-        f'\nTesting Accuracy: \n mean: {np.round(np.mean(results["test_score"]), 2)} \n std: {np.round(np.std(results["test_score"]), 3)}')
-    return np.round(np.mean(results["train_score"]), 2)
+    print(format_results(results))
+    return results
+
+def format_results(results):
+    line1 = f'\nTraining Accuracy: \n mean: {np.round(np.mean(results["train_score"]), 2)} \n std: {np.round(np.std(results["train_score"]), 3)}'
+    line2 = f'\nTesting Accuracy: \n mean: {np.round(np.mean(results["test_score"]), 2)} \n std: {np.round(np.std(results["test_score"]), 3)}'
+    return f'{line1} \n {line2}'
 
 
 def filter_hyperparams_for_pipeline(hyperparams, pipeline):

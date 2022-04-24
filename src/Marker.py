@@ -5,8 +5,8 @@ import os
 
 @unique
 class Marker(IntEnum):
-    LEFT = 2
     RIGHT = 1
+    LEFT = 2
     IDLE = 3
     TOUNGE = 4
 

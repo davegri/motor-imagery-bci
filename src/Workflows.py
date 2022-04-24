@@ -62,7 +62,6 @@ def create_pipeline_for_subject(subject, pipeline=spectral, choose=False):
     pipe = pipeline.create_pipeline(hyperparams)
     pipe.fit(epochs, labels)
 
-    evaluate_pipeline(pipe, epochs, labels)
     return pipe
 
 

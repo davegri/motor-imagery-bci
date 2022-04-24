@@ -2,8 +2,6 @@ import numpy as np
 from src.Marker import Marker
 from src.board import Board
 
-from psychopy import sound, visual
-
 from src.pipeline import get_epochs, evaluate_pipeline
 from src.data_utils import load_rec_params, save_raw, load_hyperparams
 import src.spectral as spectral
@@ -16,6 +14,7 @@ AUDIO_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "../audio")
 visual = None
 core = None
 event = None
+sound = None
 
 
 def run_session(params, retrain_pipeline=None, predict_pipeline=None, epochs=None, labels=None):
@@ -24,9 +23,9 @@ def run_session(params, retrain_pipeline=None, predict_pipeline=None, epochs=Non
     """
 
     # import psychopy only here to prevent pygame loading.
-    from psychopy import visual as vis, core as cor, event as eve
-    global visual, core, event
-    visual, core, event = vis, cor, eve
+    from psychopy import visual as vis, core as cor, event as eve, sound as snd
+    global visual, core, event, sound
+    visual, core, event, sound = vis, cor, eve, snd
 
     # create list of random trials
     trial_markers = Marker.all() * params["trials_per_stim"]
@@ -102,7 +101,8 @@ def run_session(params, retrain_pipeline=None, predict_pipeline=None, epochs=Non
                 win.flip()
                 keys_pressed = event.waitKeys()
                 if 'escape' in keys_pressed:
-                    core.quit()
+                    win.close()
+                    return
 
         core.wait(0.5)
         win.close()
@@ -116,7 +116,7 @@ def loop_through_messages(win, messages):
         win.flip()
         keys_pressed = event.waitKeys()
         if 'escape' in keys_pressed:
-            core.quit()
+            win.close()
         if 'backspace' in keys_pressed:
             break
 
@@ -129,7 +129,7 @@ def marker_stim(win, marker):
 def show_stim_for_duration(win, vis_stim, aud_stim, duration):
     # Adding this code here is an easy way to make sure we check for an escape event before showing every stimulus
     if 'escape' in event.getKeys():
-        core.quit()
+        win.close()
 
     vis_stim.draw()  # draw stim on back buffer
     aud_stim.play()
@@ -145,7 +145,7 @@ def text_stim(win, text):
 def show_stim_with_beeps(win, vis_stim, duration):
     # Adding this code here is an easy way to make sure we check for an escape event before showing every stimulus
     if 'escape' in event.getKeys():
-        core.quit()
+        win.close()
 
     vis_stim.draw()  # draw stim on back buffer
     sound.Sound("a", secs=0.1).play()

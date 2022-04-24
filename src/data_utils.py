@@ -35,6 +35,9 @@ def load_rec_params():
 
     return rec_params
 
+def save_rec_params(params):
+    json_dump(params, const.RECORDING_PARAMS_PATH)
+
 
 def load_recording(rec_folder):
     return mne.io.read_raw_fif(os.path.join(const.RECORDINGS_DIR, rec_folder, 'raw.fif'))
