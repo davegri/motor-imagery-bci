@@ -10,3 +10,6 @@ matplotlib~=3.5.0
 scipy~=1.7.3
 scikit-optimize
 tkfilebrowser~=2.3.2
+pyedifice~=0.0.10
+mne-features~=0.2
+tkfilebrowser~=2.3.2
