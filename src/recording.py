@@ -123,8 +123,9 @@ def loop_through_messages(win, messages):
 
 
 def marker_stim(win, marker):
-    shape = visual.ShapeStim(win, vertices=Marker(marker).shape, fillColor=STIM_COLOR, size=.5)
-    return shape
+    if Marker(marker).what_to_show == "shape":
+        return visual.ShapeStim(win, vertices=Marker(marker).shape, fillColor=STIM_COLOR, size=.5)
+    return visual.ImageStim(win, image=Marker(marker).image_path, size=(0.6, 0.6))
 
 
 def show_stim_for_duration(win, vis_stim, aud_stim, duration):
@@ -173,6 +174,7 @@ def progress_sound(stim):
     if os.path.isfile(sound_path):
         return sound.Sound(sound_path)
     else:
+        print(f'Sound path {sound_path} does not exist')
         return sound.Sound()
 
 

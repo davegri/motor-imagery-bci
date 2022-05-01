@@ -21,6 +21,12 @@ class Marker(IntEnum):
         else:
             return create_square_shape()
 
+    @property
+    def what_to_show(self):
+        if self == Marker.TOUNGE:
+            return "image"
+        return "shape"
+
     @classmethod
     def all(cls):
         return [stim.value for stim in cls]
