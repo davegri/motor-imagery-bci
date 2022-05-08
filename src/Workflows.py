@@ -5,12 +5,14 @@ from sklearn.model_selection import RepeatedStratifiedKFold
 from skopt import BayesSearchCV
 from skopt.space import Categorical, Integer, Real
 from src.recording import run_session
-from src.pipeline import evaluate_pipeline, get_epochs, bayesian_opt
+from src.pipeline import evaluate_pipeline, get_epochs, bayesian_opt, Marker
 from src.data_utils import load_recordings, load_hyperparams, save_hyperparams, load_rec_params
 import src.spectral as spectral
 import src.csp as csp
 import sklearn
 import pandas as pd
+from sklearn.pipeline import Pipeline
+
 
 models = [
     {"model": sklearn.discriminant_analysis.LinearDiscriminantAnalysis, "search_space": {
@@ -42,19 +44,20 @@ models = [
     }},
 ]
 
-def record_and_create_pipeline(pipeline: ModuleType = spectral):
+
+def record_and_create_pipeline(pipeline: ModuleType = spectral) -> Pipeline:
     rec_params = load_rec_params()
     run_session(rec_params)
     create_pipeline_for_subject(rec_params["subject"], pipeline)
     return pipeline
 
 
-def create_pipeline_for_subject(subject, pipeline: ModuleType = spectral, choose=False):
+def create_pipeline_for_subject(subject: str, pipeline: ModuleType = spectral, choose=False, markers=Marker.all()) -> Pipeline:
     """
     Create pipline of type in: ["spectral", "csp"]
     """
     print(f'Creating pipeline for subject {subject}...')
-    epochs, labels = load_epochs_for_subject(subject, choose)
+    epochs, labels = load_epochs_for_subject(subject, choose, markers)
     hyperparams = load_hyperparams(subject, pipeline.name)
 
     pipe = pipeline.create_pipeline(hyperparams)
@@ -63,13 +66,13 @@ def create_pipeline_for_subject(subject, pipeline: ModuleType = spectral, choose
     return pipe
 
 
-def find_best_hyperparams_for_subject(subject=None, pipeline: ModuleType = spectral, choose=False):
+def find_best_hyperparams_for_subject(subject: str = None, pipeline: ModuleType = spectral, choose: bool = False):
     epochs, labels = load_epochs_for_subject(subject, choose)
     best_hyperparams = bayesian_opt(epochs, labels, pipeline)
     save_hyperparams(best_hyperparams, pipeline.name, subject)
 
 
-def find_best_pipeline_for_subject(subject=None, pipeline: ModuleType=csp):
+def find_best_pipeline_for_subject(subject: str = None, pipeline: ModuleType = csp):
     Path(f'../{subject}_pipeline_results').mkdir(exist_ok=True)
     epochs, labels = load_epochs_for_subject(subject)
     results = []
@@ -101,22 +104,23 @@ def find_best_pipeline_for_subject(subject=None, pipeline: ModuleType=csp):
     pd.DataFrame(results).to_csv(f'../{subject}_pipeline_results/{pipeline.name}_results.csv')
 
 
-def record_with_live_retraining(subject, pipeline: ModuleType = spectral, choose=False):
+def record_with_live_retraining(subject: str, pipeline: ModuleType = spectral, choose: bool = False):
     epochs, labels = load_epochs_for_subject(subject, choose=choose)
     rec_params = load_rec_params()
     run_session(rec_params, retrain_pipeline=pipeline, epochs=epochs, labels=labels)
     create_pipeline_for_subject(rec_params["subject"], pipeline=pipeline)
 
 
-def load_epochs_for_subject(subject, choose=False):
+def load_epochs_for_subject(subject: str, choose: bool = False, markers=Marker.all()):
     """
     subject = subject's name
     """
     raws, rec_params = load_recordings(subject, choose)
-    epochs, labels = get_epochs(raws, rec_params["trial_duration"], rec_params["calibration_duration"],
+    epochs, labels = get_epochs(raws, rec_params["trial_duration"], rec_params["calibration_duration"], markers,
                                 reject_bad=not rec_params['use_synthetic_board'])
     return epochs.get_data(), labels
 
 
 if __name__ == "__main__":
-    load_epochs_for_subject("Synthetic")
+    epochs, labels = load_epochs_for_subject("Robert", markers=[4, 3])
+    evaluate_pipeline(create_pipeline_for_subject("Robert", pipeline=csp, markers=[4, 3]), epochs, labels, 5, 7)

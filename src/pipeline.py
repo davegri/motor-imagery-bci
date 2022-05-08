@@ -8,7 +8,6 @@ from skopt import BayesSearchCV
 from sklearn.pipeline import Pipeline
 mne.set_log_level('warning')
 
-
 def evaluate_pipeline(pipeline: Pipeline, epochs, labels, n_splits=10, n_repeats=1):
     n_splits = get_n_splits(n_splits, labels)
     print(f'Evaluating pipeline performance ({n_splits} splits, {n_repeats} repeats, {len(labels)} epochs)...')
