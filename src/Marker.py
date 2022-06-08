@@ -29,7 +29,7 @@ class Marker(IntEnum):
 
     @classmethod
     def all(cls):
-        return [stim.value for stim in cls]
+        return [cls.LEFT, cls.RIGHT, cls.IDLE]
 
 
 def create_arrow_shape(marker=Marker.RIGHT):

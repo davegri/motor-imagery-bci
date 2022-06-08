@@ -15,7 +15,7 @@ class App(ed.Component):
         self.rec_params_state = ed.StateManager(rec_params)
 
     def start_recording(self, e):
-        run_session(self.rec_params_state)
+        run_session(self.rec_params_state.as_dict())
 
     def create_pipeline(self, e):
         subject = self.rec_params["subject"]
