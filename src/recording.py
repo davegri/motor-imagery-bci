@@ -158,7 +158,7 @@ def show_stim_with_beeps(win, vis_stim, duration):
 
 
 def progress_text(win, done, total, stim):
-    txt = visual.TextStim(win=win, text=f'trial {done}/{total}\n get ready for {Marker(stim).name}', color=STIM_COLOR,
+    txt = visual.TextStim(win=win, text=f'trial {done}/{total}\n {Marker(stim).get_ready_text}', color=STIM_COLOR,
                           bold=True, alignHoriz='center', alignVert='center')
 
     txt.font = 'arial'

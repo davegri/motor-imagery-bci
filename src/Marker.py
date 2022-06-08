@@ -15,6 +15,15 @@ class Marker(IntEnum):
         return os.path.join(IMAGES_DIR, f'{self.name}.png')
 
     @property
+    def get_ready_text(self):
+        if self == Marker.LEFT:
+            return "get ready for LEFT!"
+        if self == Marker.RIGHT:
+            return "get ready for RIGHT"
+        if self == Marker.IDLE:
+            return "get ready for IDLE"
+
+    @property
     def shape(self):
         if self == Marker.LEFT or self == Marker.RIGHT:
             return create_arrow_shape(self)

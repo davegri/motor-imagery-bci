@@ -1,0 +1,11 @@
+{
+    "csp__entropy": true,
+    "csp__log_mean_power": false,
+    "csp__n_components": 10,
+    "csp__total_power": true,
+    "csp__var": true,
+    "preprocessing__do_laplacian": true,
+    "preprocessing__epoch_tmin": 1.6624958337694684,
+    "preprocessing__h_freq": 31.55416416347859,
+    "preprocessing__l_freq": 8.28885826611256
+}

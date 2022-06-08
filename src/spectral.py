@@ -183,16 +183,14 @@ bayesian_search_space = {
     "feature_extraction__freq_5": [True, False],
 }
 
+default_hyperparams = {
+    "preprocessing__l_freq": 6,
+    "preprocessing__h_freq": 30,
+    "preprocessing__do_laplacian": False,
+    "feature_extraction__epoch_tmin": 1.9,
+}
 
 def create_pipeline(hyperparams=None, model=LinearDiscriminantAnalysis):
-    default_hyperparams = {
-        "preprocessing__l_freq": 6,
-        "preprocessing__h_freq": 30,
-        "preprocessing__do_laplacian": False,
-        "feature_extraction__epoch_tmin": 1.9,
-        "feature_extraction__freq_bands": all_freq_bands,
-    }
-
     if hyperparams:
         hyperparams = {**default_hyperparams, **hyperparams}
     else:

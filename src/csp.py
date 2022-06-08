@@ -5,6 +5,7 @@ import mne
 import numpy as np
 from src.pipeline import show_pipeline_steps
 from skopt.space import Real, Integer
+import json
 
 name = "csp"
 
@@ -83,27 +84,27 @@ bayesian_search_space = {
     "csp__var": [True, False],
 }
 
+default_hyperparams = {
+    "csp__log_mean_power": True,
+    "csp__total_power": False,
+    "csp__entropy": False,
+    "csp__var": False,
+    "csp__n_components": 12,
+    "preprocessing__do_laplacian": False,
+    "preprocessing__epoch_tmin": 0.0,
+    "preprocessing__h_freq": 29.077596766188705,
+    "preprocessing__l_freq": 9.348780724669755
+}
 
-def create_pipeline(hyperparams=None, model=LinearDiscriminantAnalysis):
-    default_hyperparams = {
-        "csp__log_mean_power": True,
-        "csp__total_power": False,
-        "csp__entropy": False,
-        "csp__var": False,
-        "csp__n_components": 12,
-        "preprocessing__do_laplacian": False,
-        "preprocessing__epoch_tmin": 0.0,
-        "preprocessing__h_freq": 29.077596766188705,
-        "preprocessing__l_freq": 9.348780724669755
-    }
+def create_pipeline(hyperparams={}, model=LinearDiscriminantAnalysis):
     if hyperparams:
         hyperparams = {**default_hyperparams, **hyperparams}
     else:
         hyperparams = default_hyperparams
-
     pipeline = Pipeline(
         [('preprocessing', Preprocessor()), ('csp', CSP_features()), ('model', model())])
     pipeline.set_params(**hyperparams)
     print(f'Creating CSP pipeline: {show_pipeline_steps(pipeline)}')
+    print(f'With hyperparams: {json.dumps(hyperparams, indent=4)}')
 
     return pipeline
