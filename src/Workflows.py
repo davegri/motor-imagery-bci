@@ -4,7 +4,7 @@ import mne.preprocessing
 from sklearn.model_selection import RepeatedStratifiedKFold
 from skopt import BayesSearchCV
 from skopt.space import Categorical, Integer, Real
-
+import numpy as np
 from src.recording import run_session
 from src.pipeline import evaluate_pipeline, get_epochs, bayesian_opt
 from src.data_utils import load_recordings, load_hyperparams, save_hyperparams, load_rec_params
@@ -12,6 +12,7 @@ import src.spectral as spectral
 import src.csp as csp
 import sklearn
 import pandas as pd
+from src.Marker import Marker
 
 models = [
     {"model": sklearn.discriminant_analysis.LinearDiscriminantAnalysis, "search_space": {
@@ -51,7 +52,7 @@ def record_and_create_pipeline(pipeline=spectral):
     return pipeline
 
 
-def create_pipeline_for_subject(subject, pipeline=spectral, choose=False):
+def create_pipeline_for_subject(subject: str, pipeline=spectral, choose: bool = False) -> sklearn.pipeline:
     """
     Create pipline of type in: ["spectral", "csp"]
     """
@@ -110,13 +111,21 @@ def record_with_live_retraining(subject, pipeline=spectral, choose=False):
     create_pipeline_for_subject(rec_params["subject"], pipeline=pipeline)
 
 
-def load_epochs_for_subject(subject, choose=False):
+def load_epochs_for_subject(subject, choose=False, markers=None):
     raws, rec_params = load_recordings(subject, choose)
     epochs, labels = get_epochs(raws, rec_params["trial_duration"], rec_params["calibration_duration"],
-                                reject_bad=not rec_params['use_synthetic_board'])
+                                markers=markers, reject_bad=not rec_params['use_synthetic_board'])
     return epochs.get_data(), labels
 
 
 if __name__ == "__main__":
-    find_best_hyperparams_for_subject("Synthetic", pipeline=spectral)
-    record_with_live_retraining("Synthetic", csp)
+    epochs, labels = load_epochs_for_subject("Robert")
+    labels[labels==Marker.LEFT] = Marker.RIGHT
+    left_right_idxs = np.nonzero(labels == Marker.RIGHT)[0]
+    remove_idxs = np.random.choice(left_right_idxs, len(left_right_idxs)//2, replace=False)
+    labels = np.delete(labels, remove_idxs)
+    epochs = np.delete(epochs, remove_idxs, axis=0)
+    pipe = csp.create_pipeline()
+    pipe.fit(epochs, labels)
+    evaluate_pipeline(pipe, epochs, labels)
+    print()
