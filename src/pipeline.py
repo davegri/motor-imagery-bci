@@ -14,12 +14,13 @@ def evaluate_pipeline(pipeline, epochs, labels, n_splits=4, n_repeats=10):
     print(f'Evaluating pipeline performance ({n_splits} splits, {n_repeats} repeats, {len(labels)} epochs)...')
     results = cross_validate(pipeline, epochs, labels, cv=cross_validation(n_splits, n_repeats),
                              return_train_score=True, n_jobs=-1)
-    print(format_results(results))
-    pred = cross_val_predict(pipeline, epochs, labels, cv=4, n_jobs=-1)
-    con_matrix = confusion_matrix(labels, pred, normalize="true")
-    disp = ConfusionMatrixDisplay(con_matrix, display_labels=["Left/Right", "Tounge", "Idle"])
-    disp.plot()
-    plt.show()
+    return results
+    # print(format_results(results))
+    # pred = cross_val_predict(pipeline, epochs, labels, cv=4, n_jobs=-1)
+    # con_matrix = confusion_matrix(labels, pred, normalize="true")
+    # disp = ConfusionMatrixDisplay(con_matrix, display_labels=["Left/Right", "Tounge", "Idle"])
+    # disp.plot()
+    # plt.show()
 
 def format_results(results):
     line1 = f'\nTraining Accuracy: \n mean: {np.round(np.mean(results["train_score"]), 2)} \n std: {np.round(np.std(results["train_score"]), 3)}'

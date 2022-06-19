@@ -17,11 +17,11 @@ class Marker(IntEnum):
     @property
     def get_ready_text(self):
         if self == Marker.LEFT:
-            return "get ready for LEFT!"
+            return "Préparez vous: GAUCHE"
         if self == Marker.RIGHT:
-            return "get ready for RIGHT"
+            return "Préparez vous: DROITE"
         if self == Marker.IDLE:
-            return "get ready for IDLE"
+            return "Préparez vous: RIEN"
 
     @property
     def shape(self):
@@ -38,7 +38,7 @@ class Marker(IntEnum):
 
     @classmethod
     def all(cls):
-        return [stim.value for stim in cls]
+        return [cls.LEFT, cls.RIGHT, cls.IDLE]
 
 
 def create_arrow_shape(marker=Marker.RIGHT):

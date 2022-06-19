@@ -27,14 +27,17 @@ class App(ed.Component):
         rec_params = load_rec_params()
         self.rec_params_state = ed.StateManager(rec_params)
         self.pipeline_name = "csp"
-        self.hyperparams_state = {module.name: ed.StateManager(module.default_hyperparams) for module in
+        self.hyperparams_state = {module.name: ed.StateManager({**module.default_hyperparams, **load_hyperparams(self.rec_params["subject"], module.name)}) for module in
                                   pipeline_modules}
         self.epochs, self.labels = load_epochs_for_subject(self.rec_params["subject"])
         self.pipeline = None
         self.eval_results = None
 
     def start_recording(self, e):
-        run_session(self.rec_params_state)
+        run_session(self.rec_params_state.as_dict())
+
+    def coadaptive(self, e):
+        run_session(self.rec_params_state.as_dict(), retrain_pipeline=self.pipeline_module, epochs=self.epochs, labels=self.labels)
 
     def create_pipeline(self, e):
         pipeline = self.pipeline_module.create_pipeline(self.hyperparams_state[self.pipeline_name].as_dict())
@@ -119,6 +122,7 @@ class App(ed.Component):
                     View(layout="column", style={"margin": 20, "align": "top"})(
                         Button("Health Check", on_click=self.health_check, style=button_style),
                         Button("Start Recording", on_click=self.start_recording, style=button_style),
+                        Button("Coadapative Recording", on_click=self.coadaptive, style=button_style),
                     ),
                 ),
                 View(layout="column", style={"margin": 20, "align": "top"})(

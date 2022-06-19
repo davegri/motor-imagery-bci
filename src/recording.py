@@ -33,15 +33,18 @@ def run_session(params, retrain_pipeline=None, predict_pipeline=None, epochs=Non
 
     # open psychopy window and display starting message
     win = visual.Window(units="norm", color=BG_COLOR, fullscr=params["full_screen"])
-    if params["wait_on_start"]:
-        msg1 = f'Hello {params["subject"]}!\n Hit any key to start, press Esc at any point to exit'
-        loop_through_messages(win, [msg1])
 
     if retrain_pipeline:
-        hyperparams = load_hyperparams(params["subject"], retrain_pipeline)
+        visual.TextStim(win=win, text="veuillez patienter...", color=STIM_COLOR).draw()
+        win.flip()
+        hyperparams = load_hyperparams(params["subject"], retrain_pipeline.name)
         predict_pipeline = retrain_pipeline.create_pipeline(hyperparams)
         predict_pipeline.fit(epochs, labels)
         best_score = np.mean(evaluate_pipeline(predict_pipeline, epochs, labels)["test_score"])
+
+    if params["wait_on_start"]:
+        msg1 = f'Bonjour {params["subject"]}!\n appuyez sur n\'importe quelle touche pour démarrer, appuyez sur Esc à tout moment pour quitter'
+        loop_through_messages(win, [msg1])
 
     # Start recording
     with Board(use_synthetic=params["use_synthetic_board"]) as board:
@@ -75,7 +78,7 @@ def run_session(params, retrain_pipeline=None, predict_pipeline=None, epochs=Non
                                        params["display_online_result_duration"])
 
             if retrain_pipeline and i % params["retrain_num"] == 0 and i != 0:
-                text_stim(win, "Retraining model, please wait...").draw()
+                text_stim(win, "Entraînement du modèle, veuillez patienter...").draw()
                 win.flip()
 
                 # train new pipeline
@@ -93,10 +96,9 @@ def run_session(params, retrain_pipeline=None, predict_pipeline=None, epochs=Non
 
                 if score > best_score:
                     best_score = score
-                    msg += "\nNice! the model has improved!"
-                else:
-                    msg += "\nNo improvement, Focus man.."
-                msg += "\n Press any key to continue, ESC to exit"
+                    msg += "\nSuper!"
+
+                msg += "\n Appuyez sur n'importe quelle touche pour continuer, ESC pour quitter"
 
                 text_stim(win, msg).draw()
                 win.flip()
@@ -158,15 +160,7 @@ def show_stim_with_beeps(win, vis_stim, duration):
 
 
 def progress_text(win, done, total, stim):
-    txt = visual.TextStim(win=win, text=f'trial {done}/{total}\n {Marker(stim).get_ready_text}', color=STIM_COLOR,
-                          bold=True, alignHoriz='center', alignVert='center')
-
-    txt.font = 'arial'
-    return txt
-
-
-def progress_text(win, done, total, stim):
-    return text_stim(win, f'trial {done}/{total}\n get ready for {Marker(stim).name}')
+    return text_stim(win, f'trial {done}/{total}\n {Marker(stim).get_ready_text}')
 
 
 def progress_sound(stim):
