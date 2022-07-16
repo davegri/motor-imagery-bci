@@ -1,7 +1,6 @@
 from enum import IntEnum, unique
-from src.constants import IMAGES_DIR
+from src.constants import IMAGES_DIR, AUDIO_DIR
 import os
-
 
 @unique
 class Marker(IntEnum):
@@ -13,6 +12,9 @@ class Marker(IntEnum):
     @property
     def image_path(self):
         return os.path.join(IMAGES_DIR, f'{self.name}.png')
+
+    def sound_path(self, language):
+        return os.path.join(AUDIO_DIR, language, f"{self.name}.ogg")
 
     def get_ready_text(self, language_texts):
         return f'{language_texts["prepare_for"]} {language_texts[self.name]}'

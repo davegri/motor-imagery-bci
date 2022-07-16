@@ -26,19 +26,15 @@ def create_session_folder(subj):
     Path(folder_path).mkdir(exist_ok=True)
     return folder_path
 
-
 def load_rec_params():
     rec_params = json_load(const.RECORDING_PARAMS_PATH)
-
     return rec_params
 
 def save_rec_params(params):
     json_dump(params, const.RECORDING_PARAMS_PATH)
 
-
 def load_recording(rec_folder):
     return mne.io.read_raw_fif(os.path.join(const.RECORDINGS_DIR, rec_folder, 'raw.fif'))
-
 
 def get_file_date(filename):
     return filename.split("--")[0]
