@@ -14,14 +14,8 @@ class Marker(IntEnum):
     def image_path(self):
         return os.path.join(IMAGES_DIR, f'{self.name}.png')
 
-    @property
-    def get_ready_text(self):
-        if self == Marker.LEFT:
-            return "Préparez vous: GAUCHE"
-        if self == Marker.RIGHT:
-            return "Préparez vous: DROITE"
-        if self == Marker.IDLE:
-            return "Préparez vous: RIEN"
+    def get_ready_text(self, language_texts):
+        return f'{language_texts["prepare_for"]} {language_texts[self.name]}'
 
     @property
     def shape(self):

@@ -115,9 +115,8 @@ def load_hyperparams(subject, pipeline):
     print(json.dumps(hyperparams, indent=4))
     return hyperparams
 
-
 def json_load(load_path):
-    with open(load_path) as file:
+    with open(load_path, encoding="utf-8") as file:
         return json.load(file)
 
 

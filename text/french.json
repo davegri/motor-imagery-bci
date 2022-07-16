@@ -1,0 +1,12 @@
+{
+  "hello_msg": "Bonjour {subject_name}!",
+  "please_wait": "Veuillez patienter...",
+  "record_instructions": "Appuyez sur n'importe quelle touche pour démarrer, appuyez sur Esc à tout moment pour quitter",
+  "retraining_model": "Entraînement du modèle, veuillez patienter...",
+  "good_job": "Super!",
+  "continue_instructions": "Appuyez sur n'importe quelle touche pour continuer, ESC pour quitter",
+  "prepare_for": "Préparez vous:",
+  "LEFT": "GAUCHE",
+  "RIGHT": "DROITE",
+  "IDLE": "RIEN"
+}

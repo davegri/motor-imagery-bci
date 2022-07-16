@@ -3,9 +3,10 @@ from src.Marker import Marker
 from src.board import Board
 
 from src.pipeline import get_epochs, evaluate_pipeline
-from src.data_utils import load_rec_params, save_raw, load_hyperparams
+from src.data_utils import load_rec_params, save_raw, load_hyperparams, json_load
 import src.spectral as spectral
 import os
+from src.constants import TEXT_DIR
 
 BG_COLOR = "black"
 STIM_COLOR = "white"
@@ -38,8 +39,11 @@ def run_session(params, retrain_pipeline=None, predict_pipeline=None, epochs=Non
     # open psychopy window and display starting message
     win = visual.Window(units="norm", color=BG_COLOR, fullscr=params["full_screen"])
 
+    # import text based on recording language
+    language_texts = json_load(os.path.join(TEXT_DIR, f'{params["language"]}.json'))
+
     if retrain_pipeline:
-        visual.TextStim(win=win, text="veuillez patienter...", color=STIM_COLOR).draw()
+        visual.TextStim(win=win, text=language_texts["please_wait"], color=STIM_COLOR).draw()
         win.flip()
         hyperparams = load_hyperparams(params["subject"], retrain_pipeline.name)
         predict_pipeline = retrain_pipeline.create_pipeline(hyperparams)
@@ -47,14 +51,14 @@ def run_session(params, retrain_pipeline=None, predict_pipeline=None, epochs=Non
         best_score = np.mean(evaluate_pipeline(predict_pipeline, epochs, labels)["test_score"])
 
     if params["wait_on_start"]:
-        msg1 = f'Bonjour {params["subject"]}!\n appuyez sur n\'importe quelle touche pour démarrer, appuyez sur Esc à tout moment pour quitter'
+        msg1 = f'{language_texts["hello_msg"].format(subject_name=params["subject"])}\n{language_texts["record_instructions"]}'
         loop_through_messages(win, [msg1])
 
     # Start recording
     with Board(use_synthetic=params["use_synthetic_board"]) as board:
         for i, marker in enumerate(trial_markers):
             # "get ready" period
-            show_stim_for_duration(win, progress_text(win, i + 1, len(trial_markers), marker),
+            show_stim_for_duration(win, progress_text(win, i + 1, len(trial_markers), marker, language_texts),
                                    progress_sound(marker), params["get_ready_duration"])
             # calibration period
             core.wait(params["calibration_duration"])
@@ -82,7 +86,7 @@ def run_session(params, retrain_pipeline=None, predict_pipeline=None, epochs=Non
                                        params["display_online_result_duration"])
 
             if retrain_pipeline and i % params["retrain_num"] == 0 and i != 0:
-                text_stim(win, "Entraînement du modèle, veuillez patienter...").draw()
+                text_stim(win, text["retraining_model"]).draw()
                 win.flip()
 
                 # train new pipeline
@@ -100,9 +104,9 @@ def run_session(params, retrain_pipeline=None, predict_pipeline=None, epochs=Non
 
                 if score > best_score:
                     best_score = score
-                    msg += "\nSuper!"
+                    msg += f'\n{language_texts["good_job"]}'
 
-                msg += "\n Appuyez sur n'importe quelle touche pour continuer, ESC pour quitter"
+                msg += f'\n{language_texts["continue_instructions"]}'
 
                 text_stim(win, msg).draw()
                 win.flip()
@@ -163,8 +167,8 @@ def show_stim_with_beeps(win, vis_stim, duration):
     win.flip()  # flip back to the (now empty) back buffer
 
 
-def progress_text(win, done, total, stim):
-    return text_stim(win, f'trial {done}/{total}\n {Marker(stim).get_ready_text}')
+def progress_text(win, done, total, stim, language_texts):
+    return text_stim(win, f'trial {done}/{total}\n {Marker(stim).get_ready_text(language_texts)}')
 
 
 def progress_sound(stim):

@@ -1,0 +1,12 @@
+{
+  "hello_msg": "Hello {subject_name}!",
+  "please_wait": "Please wait...",
+  "record_instructions": "Hit any key to start, press Esc at any point to exit",
+  "retraining_model": "Retraining model, please wait...",
+  "good_job": "Good job!",
+  "continue_instructions": "Press any key to continue, ESC to exit",
+  "prepare_for": "Get ready for:",
+  "LEFT": "LEFT",
+  "RIGHT": "RIGHT",
+  "IDLE": "IDLE"
+}
