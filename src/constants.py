@@ -5,3 +5,4 @@ RECORDINGS_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "../rec
 RECORDING_PARAMS_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "../recording_params.json"))
 PIPELINES_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "../pipelines"))
 HYPERPARAMS_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "../hyperparams"))
+TEXT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "../text"))
