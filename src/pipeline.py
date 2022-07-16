@@ -2,19 +2,26 @@ import mne
 from src.Marker import Marker
 from sklearn.model_selection import RepeatedStratifiedKFold, cross_validate
 import numpy as np
-from sklearn.model_selection import GridSearchCV
+from sklearn.model_selection import GridSearchCV, cross_val_predict
 from src.data_utils import load_recordings
 from skopt import BayesSearchCV
 from sklearn.pipeline import Pipeline
+from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 mne.set_log_level('warning')
+import matplotlib.pyplot as plt
 
 def evaluate_pipeline(pipeline: Pipeline, epochs, labels, n_splits=10, n_repeats=1):
     n_splits = get_n_splits(n_splits, labels)
     print(f'Evaluating pipeline performance ({n_splits} splits, {n_repeats} repeats, {len(labels)} epochs)...')
     results = cross_validate(pipeline, epochs, labels, cv=cross_validation(n_splits, n_repeats),
                              return_train_score=True, n_jobs=-1)
-    print(format_results(results))
     return results
+    # print(format_results(results))
+    # pred = cross_val_predict(pipeline, epochs, labels, cv=4, n_jobs=-1)
+    # con_matrix = confusion_matrix(labels, pred, normalize="true")
+    # disp = ConfusionMatrixDisplay(con_matrix, display_labels=["Left/Right", "Tounge", "Idle"])
+    # disp.plot()
+    # plt.show()
 
 def format_results(results):
     line1 = f'\nTraining Accuracy: \n mean: {np.round(np.mean(results["train_score"]), 2)} \n std: {np.round(np.std(results["train_score"]), 3)}'
@@ -37,7 +44,7 @@ def show_pipeline_steps(pipeline: Pipeline):
 
 
 def cross_validation(n_splits=10, n_repeats=1):
-    return RepeatedStratifiedKFold(n_splits=n_splits, n_repeats=n_repeats)
+    return RepeatedStratifiedKFold(n_splits=n_splits)
 
 
 def bayesian_opt(epochs, labels, pipeline: Pipeline):
@@ -68,7 +75,7 @@ def grid_search_pipeline_hyperparams(epochs, labels, pipeline: Pipeline):
     return gs.best_params_
 
 
-def get_epochs(raws, trial_duration, calibration_duration, markers=Marker.all(),
+def get_epochs(raws, trial_duration, calibration_duration, markers=[Marker.LEFT, Marker.RIGHT, Marker.IDLE],
                reject_bad=False,
                on_missing='warn'):
     reject_criteria = dict(eeg=100e-6)  # 100 µV

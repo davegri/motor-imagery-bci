@@ -30,9 +30,6 @@ def create_session_folder(subj):
 def load_rec_params():
     rec_params = json_load(const.RECORDING_PARAMS_PATH)
 
-    if rec_params["use_synthetic_board"]:
-        rec_params["subject"] = SYNTHETIC_SUBJECT_NAME
-
     return rec_params
 
 def save_rec_params(params):
@@ -108,7 +105,7 @@ def load_hyperparams(subject, pipeline):
 
     if len(subj_hyperparams) == 0:
         print(f'No hyperparams found for subject {subject}')
-        return None
+        return {}
 
     if len(subj_hyperparams) > 1:
         print("Multiple hyperparam files found, taking most recent")

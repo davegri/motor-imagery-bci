@@ -15,6 +15,15 @@ class Marker(IntEnum):
         return os.path.join(IMAGES_DIR, f'{self.name}.png')
 
     @property
+    def get_ready_text(self):
+        if self == Marker.LEFT:
+            return "Préparez vous: GAUCHE"
+        if self == Marker.RIGHT:
+            return "Préparez vous: DROITE"
+        if self == Marker.IDLE:
+            return "Préparez vous: RIEN"
+
+    @property
     def shape(self):
         if self == Marker.LEFT or self == Marker.RIGHT:
             return create_arrow_shape(self)
@@ -29,7 +38,7 @@ class Marker(IntEnum):
 
     @classmethod
     def all(cls):
-        return [stim.value for stim in cls]
+        return [cls.LEFT, cls.RIGHT, cls.IDLE]
 
 
 def create_arrow_shape(marker=Marker.RIGHT):

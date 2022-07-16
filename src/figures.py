@@ -31,7 +31,7 @@ def create_and_save_plots(rec_folder_name, bad_electrodes=[]):
     epochs, labels = get_epochs([raw], rec_params["trial_duration"], rec_params["calibration_duration"])
     epochs = mne.preprocessing.compute_current_source_density(epochs)
 
-    electrodes = ["FC1", "FC2", "FC5", "FC6", "CP1", "CP2"]
+    electrodes = ["C3", "C4", "Cz"]
     class_spectrogram_fig = create_class_spectrogram_fig(epochs, electrodes, rec_params["calibration_duration"])
     class_spectrogram_fig.savefig(os.path.join(fig_path, f'class_spectrogram_{"_".join(electrodes)}.png'))
 
@@ -47,7 +47,7 @@ def create_plots_for_subject(subject):
     save_folder = f'../figures/{subject}'
     Path(save_folder).mkdir(exist_ok=True)
 
-    electrodes = ["FC1", "FC2", "FC5", "FC6", "CP1", "CP2"]
+    electrodes = ["C3", "C4", "Cz"]
     class_spectrogram_fig = create_class_spectrogram_fig(epochs, electrodes, rec_params["calibration_duration"])
     class_spectrogram_fig.savefig(
         os.path.join(save_folder, f'class_spectrogram_{"_".join(electrodes)}.png'))
@@ -170,4 +170,4 @@ def save_plots_for_subject(subject_name):
 
 if __name__ == "__main__":
     plt.ioff()  # don't display plots while creating them
-    create_plots_for_subject("David7")
+    create_plots_for_subject("Robert")
