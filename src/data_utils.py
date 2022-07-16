@@ -26,13 +26,9 @@ def create_session_folder(subj):
     Path(folder_path).mkdir(exist_ok=True)
     return folder_path
 
-
 def load_rec_params():
     rec_params = json_load(const.RECORDING_PARAMS_PATH)
     return rec_params
-
-def load_language_texts(language):
-    return json_load(os.path.join(const.TEXT_DIR, f'{language}.json'))
 
 def save_rec_params(params):
     json_dump(params, const.RECORDING_PARAMS_PATH)

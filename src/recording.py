@@ -61,7 +61,7 @@ def run_session(params, retrain_pipeline=None, predict_pipeline=None, epochs=Non
             progress_text_stim = progress_text(win, i + 1, len(trial_markers), marker, language_texts)
 
             show_stim_for_duration(win, params["get_ready_duration"], progress_text_stim,
-                                   aud_stim_start=sound.Sound(marker.sound_path))
+                                   aud_stim_start=sound.Sound(marker.sound_path(params["language"])))
 
             # calibration period
             core.wait(params["calibration_duration"])
@@ -86,9 +86,9 @@ def run_session(params, retrain_pipeline=None, predict_pipeline=None, epochs=Non
                 prediction = predict_pipeline.predict(new_epochs)[-1]
 
                 # display prediction result
-                show_stim_for_duration(win, classification_result_txt(win, marker, prediction),
-                                       classification_result_sound(marker, prediction),
-                                       params["display_online_result_duration"])
+                show_stim_for_duration(win, params["display_online_result_duration"], classification_result_txt(win, marker, prediction),
+                                       aud_stim_start=classification_result_sound(marker, prediction, params["language"]),
+                                       )
 
             if retrain_pipeline and i % params["retrain_num"] == 0 and i != 0:
                 text_stim(win, language_texts["retraining_model"]).draw()
@@ -164,12 +164,12 @@ def text_stim(win, text, color=STIM_COLOR):
 
 
 def progress_text(win, done, total, stim, language_texts):
-    return text_stim(win, f'trial {done}/{total}\n {Marker(stim).get_ready_text}')
+    return text_stim(win, f'trial {done}/{total}\n {Marker(stim).get_ready_text(language_texts)}')
 
-def classification_result_sound(marker, prediction):
+def classification_result_sound(marker, prediction, language):
     if marker == prediction:
-        return sound.Sound(os.path.join(AUDIO_DIR, "good job!.ogg"))
-    return sound.Sound(os.path.join(AUDIO_DIR, "try again.ogg"))
+        return sound.Sound(os.path.join(AUDIO_DIR, language, "good job!.ogg"))
+    return sound.Sound(os.path.join(AUDIO_DIR, language, "try again.ogg"))
 
 def classification_result_txt(win, marker, prediction):
     if marker == prediction:

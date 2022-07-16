@@ -1,10 +1,6 @@
 from enum import IntEnum, unique
 from src.constants import IMAGES_DIR, AUDIO_DIR
 import os
-from src.data_utils import load_language_texts, load_rec_params
-
-rec_params = load_rec_params()
-language_texts = load_language_texts(rec_params["language"])
 
 @unique
 class Marker(IntEnum):
@@ -17,12 +13,10 @@ class Marker(IntEnum):
     def image_path(self):
         return os.path.join(IMAGES_DIR, f'{self.name}.png')
 
-    @property
-    def sound_path(self):
-        return os.path.join(AUDIO_DIR, rec_params["language"], f"{self.name}.ogg")
+    def sound_path(self, language):
+        return os.path.join(AUDIO_DIR, language, f"{self.name}.ogg")
 
-    @property
-    def get_ready_text(self):
+    def get_ready_text(self, language_texts):
         return f'{language_texts["prepare_for"]} {language_texts[self.name]}'
 
     @property

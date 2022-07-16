@@ -7,6 +7,7 @@ from src.data_utils import json_dump
 import os
 
 params = {
+    "language": "french",
     "use_synthetic_board": True,
     "full_screen": False,
     "wait_on_start": False,
