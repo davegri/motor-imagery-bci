@@ -6,11 +6,10 @@ from src.pipeline import get_epochs, evaluate_pipeline
 from src.data_utils import load_rec_params, save_raw, load_hyperparams, json_load
 import src.spectral as spectral
 import os
-from src.constants import TEXT_DIR
+from src.constants import TEXT_DIR, AUDIO_DIR
 
 BG_COLOR = "black"
 STIM_COLOR = "white"
-AUDIO_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "../audio"))
 
 visual = None
 core = None
@@ -57,15 +56,21 @@ def run_session(params, retrain_pipeline=None, predict_pipeline=None, epochs=Non
     # Start recording
     with Board(use_synthetic=params["use_synthetic_board"]) as board:
         for i, marker in enumerate(trial_markers):
+
             # "get ready" period
-            show_stim_for_duration(win, progress_text(win, i + 1, len(trial_markers), marker, language_texts),
-                                   progress_sound(marker), params["get_ready_duration"])
+            progress_text_stim = progress_text(win, i + 1, len(trial_markers), marker, language_texts)
+
+            show_stim_for_duration(win, params["get_ready_duration"], progress_text_stim,
+                                   aud_stim_start=sound.Sound(marker.sound_path))
+
             # calibration period
             core.wait(params["calibration_duration"])
 
             # motor imagery period
-            board.insert_marker(marker)
-            show_stim_with_beeps(win, marker_stim(win, marker), params["trial_duration"])
+            START_BEEP = sound.Sound("a", secs=0.1)
+            END_BEEP = sound.Sound("c", secs=0.1)
+            show_stim_for_duration(win, params["trial_duration"], marker_stim(win, marker), aud_stim_start=START_BEEP,
+                                   aud_stim_end=END_BEEP, run_before_flip=lambda: board.insert_marker(marker))
 
             if predict_pipeline:
                 # We need to wait a short time between the end of the trial and trying to get it's data to make sure
@@ -86,14 +91,14 @@ def run_session(params, retrain_pipeline=None, predict_pipeline=None, epochs=Non
                                        params["display_online_result_duration"])
 
             if retrain_pipeline and i % params["retrain_num"] == 0 and i != 0:
-                text_stim(win, text["retraining_model"]).draw()
+                text_stim(win, language_texts["retraining_model"]).draw()
                 win.flip()
 
                 # train new pipeline
                 total_epochs = np.concatenate((epochs, new_epochs), axis=0)
                 total_labels = np.concatenate((labels, new_labels), axis=0)
                 new_pipeline = retrain_pipeline.create_pipeline(hyperparams)
-                new_pipeline.fit(total_epochs, total_labels)    
+                new_pipeline.fit(total_epochs, total_labels)
 
                 # evaluate new pipeline
                 results = evaluate_pipeline(new_pipeline, total_epochs, total_labels)
@@ -131,60 +136,40 @@ def loop_through_messages(win, messages):
         if 'backspace' in keys_pressed:
             break
 
-
 def marker_stim(win, marker):
     if Marker(marker).what_to_show == "shape":
         return visual.ShapeStim(win, vertices=Marker(marker).shape, fillColor=STIM_COLOR, size=.5)
     return visual.ImageStim(win, image=Marker(marker).image_path, size=(0.6, 0.6))
 
 
-def show_stim_for_duration(win, vis_stim, aud_stim, duration):
+def show_stim_for_duration(win, duration, vis_stim, aud_stim_start=None, aud_stim_end=None, run_before_flip=None):
     # Adding this code here is an easy way to make sure we check for an escape event before showing every stimulus
     if 'escape' in event.getKeys():
         win.close()
 
     vis_stim.draw()  # draw stim on back buffer
-    aud_stim.play()
+    if aud_stim_start:
+        aud_stim_start.play()
+    if run_before_flip:
+        run_before_flip()
     win.flip()  # flip the front and back buffers and then clear the back buffer
     core.wait(duration)
+    if aud_stim_end:
+        aud_stim_end.play()
     win.flip()  # flip back to the (now empty) back buffer
 
 
-def text_stim(win, text):
-    return visual.TextStim(win=win, text=text, color=STIM_COLOR, bold=True, alignHoriz='center', alignVert='center')
-
-
-def show_stim_with_beeps(win, vis_stim, duration):
-    # Adding this code here is an easy way to make sure we check for an escape event before showing every stimulus
-    if 'escape' in event.getKeys():
-        win.close()
-
-    vis_stim.draw()  # draw stim on back buffer
-    sound.Sound("a", secs=0.1).play()
-    win.flip()  # flip the front and back buffers and then clear the back buffer
-    core.wait(duration)
-    sound.Sound("c", secs=0.1).play()
-    win.flip()  # flip back to the (now empty) back buffer
+def text_stim(win, text, color=STIM_COLOR):
+    return visual.TextStim(win=win, text=text, color=color, bold=True, alignHoriz='center', alignVert='center')
 
 
 def progress_text(win, done, total, stim, language_texts):
-    return text_stim(win, f'trial {done}/{total}\n {Marker(stim).get_ready_text(language_texts)}')
-
-
-def progress_sound(stim):
-    sound_path = os.path.join(AUDIO_PATH, f"{Marker(stim).name}.ogg")
-    if os.path.isfile(sound_path):
-        return sound.Sound(sound_path)
-    else:
-        print(f'Sound path {sound_path} does not exist')
-        return sound.Sound()
-
+    return text_stim(win, f'trial {done}/{total}\n {Marker(stim).get_ready_text}')
 
 def classification_result_sound(marker, prediction):
     if marker == prediction:
-        return sound.Sound(os.path.join(AUDIO_PATH, "good job!.ogg"))
-    return sound.Sound(os.path.join(AUDIO_PATH, "try again.ogg"))
-
+        return sound.Sound(os.path.join(AUDIO_DIR, "good job!.ogg"))
+    return sound.Sound(os.path.join(AUDIO_DIR, "try again.ogg"))
 
 def classification_result_txt(win, marker, prediction):
     if marker == prediction:
@@ -193,14 +178,11 @@ def classification_result_txt(win, marker, prediction):
     else:
         msg = 'incorrect prediction'
         col = (1, 0, 0)
-    return visual.TextStim(win=win, text=f'label: {Marker(marker).name}\nprediction: {Marker(prediction).name}\n{msg}',
-                           color=col,
-                           bold=True, alignHoriz='center', alignVert='center', font='arial', )
+    return text_stim(win, f'label: {Marker(marker).name}\nprediction: {Marker(prediction).name}\n{msg}', col)
 
 
 def marker_image(win, marker):
     return visual.ImageStim(win=win, image=Marker(marker).image_path, units="norm", size=2, color=(1, 1, 1))
-
 
 if __name__ == "__main__":
     rec_params = load_rec_params()

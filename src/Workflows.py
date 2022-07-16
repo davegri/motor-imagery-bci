@@ -23,6 +23,7 @@ models = [
         'model__gamma': Real(1e-6, 1e+1, 'log-uniform'),
         'model__degree': Integer(1, 12),
         'model__kernel': ['linear', 'poly', 'rbf'],
+        
     }},
     {"model": sklearn.ensemble.RandomForestClassifier, "search_space": {
         "model__max_features": Integer(1, 8),
