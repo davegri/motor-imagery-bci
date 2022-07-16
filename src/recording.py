@@ -20,6 +20,10 @@ sound = None
 def run_session(params, retrain_pipeline=None, predict_pipeline=None, epochs=None, labels=None):
     """
     Run a recording session, if pipeline is passed display prediction after every epoch
+    params = the json file contains all recording parameters
+    retrain_pipeline = used within co-adaptive sessions. determine the pipeline by which the model will be trained.
+    predict_pipeline = used within co-adaptive sessions. predicting without retraining.
+    epochs, labels = used within co-adaptive session. the pre-loaded epochs and labels for the re-classifying
     """
 
     # import psychopy only here to prevent pygame loading.
@@ -85,7 +89,7 @@ def run_session(params, retrain_pipeline=None, predict_pipeline=None, epochs=Non
                 total_epochs = np.concatenate((epochs, new_epochs), axis=0)
                 total_labels = np.concatenate((labels, new_labels), axis=0)
                 new_pipeline = retrain_pipeline.create_pipeline(hyperparams)
-                new_pipeline.fit(total_epochs, total_labels)
+                new_pipeline.fit(total_epochs, total_labels)    
 
                 # evaluate new pipeline
                 results = evaluate_pipeline(new_pipeline, total_epochs, total_labels)

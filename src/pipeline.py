@@ -5,11 +5,12 @@ import numpy as np
 from sklearn.model_selection import GridSearchCV, cross_val_predict
 from src.data_utils import load_recordings
 from skopt import BayesSearchCV
+from sklearn.pipeline import Pipeline
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 mne.set_log_level('warning')
 import matplotlib.pyplot as plt
 
-def evaluate_pipeline(pipeline, epochs, labels, n_splits=4, n_repeats=10):
+def evaluate_pipeline(pipeline: Pipeline, epochs, labels, n_splits=10, n_repeats=1):
     n_splits = get_n_splits(n_splits, labels)
     print(f'Evaluating pipeline performance ({n_splits} splits, {n_repeats} repeats, {len(labels)} epochs)...')
     results = cross_validate(pipeline, epochs, labels, cv=cross_validation(n_splits, n_repeats),
@@ -33,12 +34,12 @@ def get_n_splits(n_splits, labels):
     return n_splits
 
 
-def filter_hyperparams_for_pipeline(hyperparams, pipeline):
+def filter_hyperparams_for_pipeline(hyperparams, pipeline: Pipeline):
     return {key: hyperparams[key] for key in hyperparams if
             key.split("__")[0] in pipeline.get_params().keys()}
 
 
-def show_pipeline_steps(pipeline):
+def show_pipeline_steps(pipeline: Pipeline):
     return " => ".join(list(pipeline.named_steps.keys()))
 
 
@@ -46,7 +47,7 @@ def cross_validation(n_splits=10, n_repeats=1):
     return RepeatedStratifiedKFold(n_splits=n_splits)
 
 
-def bayesian_opt(epochs, labels, pipeline):
+def bayesian_opt(epochs, labels, pipeline: Pipeline):
     pipe = pipeline.create_pipeline()
     n_splits = get_n_splits(10, labels)
     opt = BayesSearchCV(
@@ -64,7 +65,7 @@ def bayesian_opt(epochs, labels, pipeline):
     return opt.best_params_, opt.best_score_, opt.cv_results_["std_test_score"][opt.best_index_]
 
 
-def grid_search_pipeline_hyperparams(epochs, labels, pipeline):
+def grid_search_pipeline_hyperparams(epochs, labels, pipeline: Pipeline):
     gs = GridSearchCV(pipeline.create_pipeline(), pipeline.grid_search_space, cv=cross_validation(), n_jobs=-1,
                       verbose=10,
                       error_score="raise")
